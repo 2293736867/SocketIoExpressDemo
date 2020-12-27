@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+            crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script>
+        var socket = io()
+        $(function (){
+            if(localStorage.getItem('origin') === null){
+                alert('请先登录')
+                window.location = '/login'
+            }
+
+            var userList = []
+
+            $('#private').click(()=>{
+                $.ajax({
+                    url:'http://localhost:3000/get/users',
+                    type:'GET',
+                    headers:{
+                        token:localStorage.getItem('token')
+                    },
+                    success(res){
+                        userList = res.data
+                        if($("#userList").children().length === 0)
+                        {
+                            for(var i=0;i<userList.length;++i)
+                            {
+                                $("#userList").append('<a href="/private/'+userList[i]+'" class="list-group-item list-group-item-action">'+userList[i]+'</a>')
+                            }
+                        }
+                    }
+                })
+            })
+
+            $('#public').click(()=>{
+                window.location = '/public'
+            })
+
+            $('#exit').click(()=>{
+                localStorage.removeItem('token')
+                localStorage.removeItem('origin')
+                window.location = '/login'
+            })
+        })
+    </script>
+</head>
+<body>
+    <div style="text-align: center">
+        <button type="button" class="btn btn-primary" id="private" data-bs-toggle="modal" data-bs-target="#chooseUser">私聊</button>
+        <button type="button" class="btn btn-primary" id="public">公共聊天</button>
+        <button type="button" class="btn btn-primary" id="exit">退出</button>
+    </div>
+
+    <div class="modal fade" id="chooseUser" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">请选择用户</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group" id="userList">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <title>登录</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+            crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script>
+        $(function () {
+            $('#button').css('line-height',window.screen.height/2+'px')
+            $('#signInUp').click(() => {
+                var username = $('#username').val()
+                var password = $('#password').val()
+                if (username && password) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'http://localhost:3000/signInUp',
+                        data: {
+                            username: username,
+                            password: password
+                        },
+                        success: function (res) {
+                            var message = ''
+                            if (res.code === 100) {
+                                message = '注册成功'
+                                localStorage.setItem('origin', username)
+                                localStorage.setItem('token', res.token)
+                                alert(message)
+                                window.location = '/'
+                            } else if (res.code === 101) {
+                                message = '登录失败，密码错误'
+                                alert(message)
+                            } else if (res.code === 102) {
+                                message = '登录成功'
+                                localStorage.setItem('origin', username)
+                                localStorage.setItem('token', res.token)
+                                alert(message)
+                                window.location = '/'
+                            }
+                        }
+                    })
+                } else {
+                    alert('用户名或密码为空')
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+<div>
+    <div style="text-align: center;" id="button">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            登录/注册
+        </button>
+    </div>
+    <div class="modal" tabindex="-1" id="exampleModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">登录</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-text">用户名</span>
+                        <input type="text" class="form-control" placeholder="请输入用户名" id="username">
+                    </div>
+                    <br>
+                    <div class="input-group">
+                        <span class="input-group-text">密码</span>
+                        <input type="password" class="form-control" placeholder="请输入密码" id="password">
+                    </div>
+                </div>
+                <div class="modal-footer" style="margin: 0 auto">
+                    <button type="button" class="btn btn-primary" id="signInUp">登录/注册</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
